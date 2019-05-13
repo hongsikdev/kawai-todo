@@ -10,13 +10,40 @@ export default class Todo extends Component {
     };
 
     render() {
-        const { isCompleted } = this.state;
+        const { isCompleted, isEditing } = this.state;
         return (
             <View style={styles.container}>
-                <TouchableOpacity onPress={this._toggleCompletedTodo}>
-                    <View style={[styles.circle, isCompleted ? styles.completedCircle : styles.uncompletedCircle]} />
-                </TouchableOpacity>
-                <Text style={styles.text}> Hello I'm To Do</Text>
+                <View style={styles.column}>
+                    <TouchableOpacity onPress={this._toggleCompletedTodo}>
+                        <View style={[styles.circle, isCompleted ? styles.completedCircle : styles.uncompletedCircle]} />
+                    </TouchableOpacity>
+                    <Text style={[styles.text, isCompleted ? styles.compltedText : styles.uncompltedText]}> Hello I'm To Do</Text>
+                </View>
+
+                <View styles={styles.column}>
+                    {isEditing ? (
+                        <View style={styles.action}>
+                            <TouchableOpacity onPress={this._finishEditin}>
+                                <View style={styles.actionContainer}>
+                                    <Text style={styles.actionText}>✅</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                            <View style={styles.actions}>
+                                <TouchableOpacity onPressOut={this._startEditin}>
+                                    <View style={styles.actionContainer}>
+                                        <Text style={styles.actionText}>🖌</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <View style={styles.actionContainer}>
+                                        <Text style={styles.actionText}>❎</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                </View>
             </View>
         );
     }
@@ -29,6 +56,18 @@ export default class Todo extends Component {
         })
     }
 
+    _startEditin = () => {
+        this.setState({
+            isEditing: true
+        })
+    }
+
+    _finishEditin = () => {
+        this.setState({
+            isEditing: false
+        })
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -37,7 +76,8 @@ const styles = StyleSheet.create({
         borderBottomColor: "#bbb",
         borderBottomWidth: StyleSheet.hairlineWidth,
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     text: {
         fontWeight: "600",
@@ -57,6 +97,26 @@ const styles = StyleSheet.create({
     },
     uncompletedCircle: {
         borderColor: "#F23657"
-    }
+    },
 
+    compltedText: {
+        color: "#bbb",
+        textDecorationLine: "line-through"
+    },
+    uncompltedText: {
+        color: "#353839"
+    },
+    column: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: width / 2,
+        justifyContent: "space-between"
+    },
+    actions: {
+        flexDirection: "row"
+    },
+    actionContainer: {
+        marginVertical: 10,
+        marginHorizontal: 10
+    }
 });
