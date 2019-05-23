@@ -9,16 +9,15 @@ import {
   Platform,
   ScrollView
 } from "react-native";
-
 import { AppLoading } from "expo";
 import ToDo from "./ToDo";
-import uuidv1 from "uuid";
+import uuidv1 from "uuid/v1";
 
 const { height, width } = Dimensions.get("window");
 
 export default class App extends React.Component {
   state = {
-    newTodo: "",
+    newToDo: "",
     loadedToDos: false,
     toDos: {}
   };
@@ -27,7 +26,6 @@ export default class App extends React.Component {
   };
   render() {
     const { newToDo, loadedToDos, toDos } = this.state;
-    console.log('todos : ' + toDos);
     if (!loadedToDos) {
       return <AppLoading />;
     }
@@ -40,23 +38,24 @@ export default class App extends React.Component {
             style={styles.input}
             placeholder={"New To Do"}
             value={newToDo}
-            onChangeText={this._controlNewTodo}
+            onChangeText={this._crontollNewToDo}
             placeholderTextColor={"#999"}
             returnKeyType={"done"}
             autoCorrect={false}
             onSubmitEditing={this._addToDo}
           />
           <ScrollView contentContainerStyle={styles.toDos}>
-            {Object.values(toDos).map(todo => <ToDo key={toDos.id} {...todo}/>)}
+            {Object.values(toDos).map(toDo => (
+              <ToDo key={toDo.id} deleteToDo={this._deleteToDo} {...toDo} />
+            ))}
           </ScrollView>
         </View>
       </View>
     );
   }
-
-  _controlNewTodo = text => {
+  _crontollNewToDo = text => {
     this.setState({
-      newTodo: text
+      newToDo: text
     });
   };
   _loadToDos = () => {
@@ -85,10 +84,20 @@ export default class App extends React.Component {
             ...newToDoObject
           }
         };
-        // this._saveToDos(newState.toDos);
         return { ...newState };
       });
     }
+  };
+  _deleteToDo = id => {
+    this.setState(prevState => {
+      const toDos = prevState.toDos;
+      delete toDos[id];
+      const newState = {
+        ...prevState,
+        ...toDos
+      };
+      return { ...newState };
+    });
   };
 }
 
@@ -98,7 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F23657",
     alignItems: "center"
   },
-
   title: {
     color: "white",
     fontSize: 30,
@@ -106,11 +114,10 @@ const styles = StyleSheet.create({
     fontWeight: "200",
     marginBottom: 30
   },
-
   card: {
     backgroundColor: "white",
     flex: 1,
-    width: width - 50,
+    width: width - 25,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     ...Platform.select({
@@ -123,7 +130,7 @@ const styles = StyleSheet.create({
           width: 0
         }
       },
-      andorid: {
+      android: {
         elevation: 3
       }
     })
